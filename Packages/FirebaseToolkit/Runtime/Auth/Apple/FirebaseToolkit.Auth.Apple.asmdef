@@ -1,0 +1,25 @@
+{
+    "name": "FirebaseToolkit.Auth.Apple",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e2146bdc04d424169b039613a1b62bdf",
+        "GUID:4deb1107fd1474bdfaee1a18596c8d2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FBTK_AUTH_APPLE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.lupidan.apple-signin-unity",
+            "expression": "",
+            "define": "FBTK_AUTH_APPLE"
+        }
+    ],
+    "noEngineReferences": false
+}

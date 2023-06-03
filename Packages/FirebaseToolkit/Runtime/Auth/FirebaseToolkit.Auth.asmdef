@@ -1,0 +1,22 @@
+{
+    "name": "FirebaseToolkit.Auth",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FBTK_AUTH"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.google.firebase.auth",
+            "expression": "",
+            "define": "FBTK_AUTH"
+        }
+    ],
+    "noEngineReferences": false
+}

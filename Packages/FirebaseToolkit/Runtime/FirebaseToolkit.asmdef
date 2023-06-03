@@ -1,0 +1,29 @@
+{
+    "name": "FirebaseToolkit",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4deb1107fd1474bdfaee1a18596c8d2c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FBTK_APP"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.google.firebase.app",
+            "expression": "",
+            "define": "FBTK_APP"
+        },
+        {
+            "name": "com.google.firebase.auth",
+            "expression": "",
+            "define": "FBTK_AUTH"
+        }
+    ],
+    "noEngineReferences": false
+}

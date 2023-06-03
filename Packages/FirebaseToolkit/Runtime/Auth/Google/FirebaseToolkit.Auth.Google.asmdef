@@ -1,0 +1,25 @@
+{
+    "name": "FirebaseToolkit.Auth.Google",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4deb1107fd1474bdfaee1a18596c8d2c",
+        "GUID:eec51df2b2db1417798e518cdf5bd4d8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "FBTK_AUTH_GOOGLE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.google.google-signin-unity",
+            "expression": "",
+            "define": "FBTK_AUTH_GOOGLE"
+        }
+    ],
+    "noEngineReferences": false
+}
