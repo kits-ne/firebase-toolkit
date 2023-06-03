@@ -1,9 +1,9 @@
 {
-  "name": "com.aaron.fbtk",
+  "name": "com.aaron.firebase-toolkit",
   "version": "0.0.0",
-  "description": "Firebase Integration Tools",
+  "description": "Firebase Integration Scripts",
   "displayName": "Firebase Toolkit",
-  "unity": "2020.3",
+  "unity": "2021.3",
   "keywords": [
     "firebase"
   ]
