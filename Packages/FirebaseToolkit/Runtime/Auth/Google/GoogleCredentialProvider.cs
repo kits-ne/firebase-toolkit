@@ -1,5 +1,5 @@
 using System;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Firebase.Auth;
 using Google;
 
@@ -44,7 +44,7 @@ namespace FirebaseToolkit.Auth.Google
             };
         }
 
-        public async Task<bool> Validate(IUserInfo userInfo)
+        public async UniTask<bool> Validate(IUserInfo userInfo)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace FirebaseToolkit.Auth.Google
             }
         }
 
-        public async Task<Credential> SignIn()
+        public async UniTask<Credential> SignIn()
         {
             GoogleSignInUser signIn;
             try

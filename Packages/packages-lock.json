@@ -1,10 +1,53 @@
 {
   "dependencies": {
-    "com.aaron.fbtk": {
+    "com.aaron.firebase-toolkit": {
       "version": "file:FirebaseToolkit",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
+    },
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.3.3",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b992a061fbf68ff1eb475d0837065b0549ed31ba"
+    },
+    "com.google.external-dependency-manager": {
+      "version": "file:com.google.external-dependency-manager-1.2.176.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {}
+    },
+    "com.google.firebase.app": {
+      "version": "file:com.google.firebase.app-11.0.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.176"
+      }
+    },
+    "com.google.firebase.auth": {
+      "version": "file:com.google.firebase.auth-11.0.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "11.0.0"
+      }
+    },
+    "com.google.google-signin-unity": {
+      "version": "https://github.com/qkrsogusl3/google-signin-unity.git#1.0.4",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d40a4e150ca554bf8a3127c69ef8a6b71e9ddd6b"
+    },
+    "com.lupidan.apple-signin-unity": {
+      "version": "https://github.com/lupidan/apple-signin-unity.git#v1.4.2",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e39981bca07f08f068231f651e1e8d0f69397222"
     },
     "com.unity.2d.animation": {
       "version": "7.0.10",
@@ -92,7 +135,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.2",
+      "version": "1.8.4",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -101,7 +144,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
-      "version": "2.0.3",
+      "version": "2.0.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -129,7 +172,7 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.18",
+      "version": "3.0.21",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -138,7 +181,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.17",
+      "version": "2.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -176,7 +219,7 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.8.2",
+        "com.unity.burst": "1.8.4",
         "com.unity.render-pipelines.core": "12.1.11",
         "com.unity.shadergraph": "12.1.11"
       }
@@ -198,7 +241,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.31",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -218,7 +261,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.6.4",
+      "version": "1.6.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {

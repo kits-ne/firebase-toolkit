@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using AppleAuth;
 using AppleAuth.Enums;
 using AppleAuth.Extensions;
 using AppleAuth.Interfaces;
 using AppleAuth.Native;
+using Cysharp.Threading.Tasks;
 using Firebase.Auth;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -52,25 +52,26 @@ namespace FirebaseToolkit.Auth.Apple
         private void OnCredentialRevoked(string result)
         {
             Debug.LogError($"[fbtk] revoked {result}");
+            FirebaseAuth.DefaultInstance.SignOut();
             // FirebaseManager.Auth.SignOut();
             // _onCredentialRevoked?.Invoke(result);
         }
 
-        private Task<CredentialState> GetCredentialStateAsync(string userId)
+        private UniTask<CredentialState> GetCredentialStateAsync(string userId)
         {
-            var source = new TaskCompletionSource<CredentialState>();
+            var source = new UniTaskCompletionSource<CredentialState>();
             Manager.GetCredentialState(userId, state => source.TrySetResult(state),
                 err => source.TrySetException(new AppleErrorException(err)));
             return source.Task;
         }
 
-        public async Task<bool> Validate(IUserInfo userInfo)
+        public async UniTask<bool> Validate(IUserInfo userInfo)
         {
             var state = await GetCredentialStateAsync(userInfo.UserId);
             return state == CredentialState.Authorized;
         }
 
-        public async Task<Credential> SignIn()
+        public async UniTask<Credential> SignIn()
         {
             var rawNonce = GenerateRandomString(32);
             var nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
@@ -101,10 +102,10 @@ namespace FirebaseToolkit.Auth.Apple
             );
         }
 
-        private async Task<SignInResult> LoginWithAppleIdAsync(
+        private async UniTask<SignInResult> LoginWithAppleIdAsync(
             IAppleAuthManager manager, AppleAuthLoginArgs args)
         {
-            var source = new TaskCompletionSource<IAppleIDCredential>();
+            var source = new UniTaskCompletionSource<IAppleIDCredential>();
             manager.LoginWithAppleId(args, result => { source.TrySetResult(result as IAppleIDCredential); },
                 err => { source.TrySetException(new AppleErrorException(err)); });
             var credential = await source.Task;

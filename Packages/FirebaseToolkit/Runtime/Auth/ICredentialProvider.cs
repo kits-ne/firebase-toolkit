@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Firebase.Auth;
 
 namespace FirebaseToolkit.Auth
@@ -7,7 +7,7 @@ namespace FirebaseToolkit.Auth
     {
         bool IsSupported { get; }
         string ProviderId { get; }
-        Task<bool> Validate(IUserInfo userInfo);
-        Task<Credential> SignIn();
+        UniTask<bool> Validate(IUserInfo userInfo);
+        UniTask<Credential> SignIn();
     }
 }

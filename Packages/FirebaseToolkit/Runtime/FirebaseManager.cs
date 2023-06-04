@@ -1,15 +1,15 @@
-#define FBTK_LOG
-
 using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Firebase;
-using Debug = UnityEngine.Debug;
 
 namespace FirebaseToolkit
 {
     public partial class FirebaseConfig
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool SkipAppInit = false;
     }
 
     public static partial class FirebaseManager
@@ -17,12 +17,16 @@ namespace FirebaseToolkit
         private static FirebaseApp _app;
         private static bool IsInitialized => _app != null;
 
-        public static async Task InitializeAsync(FirebaseConfig config)
+        public static async UniTask InitializeAsync(FirebaseConfig config)
         {
             var result = await FirebaseApp.CheckAndFixDependenciesAsync();
             if (result == DependencyStatus.Available)
             {
-                _app = FirebaseApp.DefaultInstance;
+                if (!config.SkipAppInit)
+                {
+                    _app = FirebaseApp.DefaultInstance;
+                }
+
                 AppInitialized(config);
             }
             else
@@ -32,18 +36,6 @@ namespace FirebaseToolkit
         }
 
         static partial void AppInitialized(FirebaseConfig config);
-
-        [Conditional("FBTK_LOG")]
-        internal static void Log(string message)
-        {
-            Debug.Log($"[FBTK] {message}");
-        }
-
-        [Conditional("FBTK_LOG")]
-        internal static void Log(string category, string message)
-        {
-            Debug.Log($"[FBTK] [{category}] {message}");
-        }
     }
 
 
