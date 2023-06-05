@@ -52,16 +52,13 @@ namespace FirebaseToolkit.Auth.Apple
         private void OnCredentialRevoked(string result)
         {
             Debug.LogError($"[fbtk] revoked {result}");
-            FirebaseAuth.DefaultInstance.SignOut();
-            // FirebaseManager.Auth.SignOut();
-            // _onCredentialRevoked?.Invoke(result);
         }
 
         private UniTask<CredentialState> GetCredentialStateAsync(string userId)
         {
             var source = new UniTaskCompletionSource<CredentialState>();
-            Manager.GetCredentialState(userId, state => source.TrySetResult(state),
-                err => source.TrySetException(new AppleErrorException(err)));
+            Manager.GetCredentialState(userId, state => { source.TrySetResult(state); },
+                err => { source.TrySetException(new AppleErrorException(err)); });
             return source.Task;
         }
 

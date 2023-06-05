@@ -37,9 +37,26 @@ namespace FirebaseToolkit.Auth
 
         public async UniTask<UserInfo> LoginAsync()
         {
-            if (_auth.CurrentUser == null) return new UserInfo();
+            if (_auth.CurrentUser == null)
+            {
+                return new UserInfo();
+            }
 
             var user = _auth.CurrentUser;
+
+            switch (_config.CredentialValidationOnLogin)
+            {
+                case LoginCredentialValidateMode.Latest:
+                    return await ValidateLatestProvider(user);
+                case LoginCredentialValidateMode.All:
+                    return await ValidateAllProvider(user);
+            }
+
+            return new UserInfo(user);
+        }
+
+        private async UniTask<UserInfo> ValidateLatestProvider(FirebaseUser user)
+        {
             var providerUsers = user.ProviderData.Select(_ => new SafeUserInfo(_)).ToArray();
 
             IUserInfo signedUser = null;
@@ -70,8 +87,36 @@ namespace FirebaseToolkit.Auth
             return new UserInfo(user);
         }
 
+        private async UniTask<UserInfo> ValidateAllProvider(FirebaseUser user)
+        {
+            var providerUsers = user.ProviderData.Select(_ => new SafeUserInfo(_)).ToArray();
+            foreach (var providerUser in providerUsers)
+            {
+                if (!_config.Providers.TryGetValue(providerUser.ProviderId, out var provider)) continue;
+
+                var isValid = await provider.Validate(providerUser);
+                if (isValid) continue;
+
+                try
+                {
+                    var unlinkResult = await user.UnlinkAsync(providerUser.ProviderId);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+
+            return new UserInfo(user);
+        }
+
         public async UniTask<UserInfo> SignInAsync(string providerId)
         {
+            if (_auth.CurrentUser != null)
+            {
+                throw new SignInFailedException(SignInFailReason.CreatedUser);
+            }
+
             if (!_config.Providers.TryGetValue(providerId, out var provider))
             {
                 throw new SignInFailedException(SignInFailReason.NotSupportProvider, providerId);
@@ -80,6 +125,7 @@ namespace FirebaseToolkit.Auth
             var credential = await provider.SignIn();
             var user = await _auth.SignInWithCredentialAsync(credential);
 
+            Debug.Log($"sign in with {credential.Provider} and anonymous: {user.IsAnonymous}");
             LatestProviderId = providerId;
             return new UserInfo(user);
         }
@@ -102,6 +148,44 @@ namespace FirebaseToolkit.Auth
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="providerId"></param>
+        /// <returns>success provider id</returns>
+        /// <exception cref="SignInFailedException"></exception>
+        /// <exception cref="LinkFailedException"></exception>
+        public async UniTask<string> LinkAsync(string providerId)
+        {
+            if (!_config.Providers.TryGetValue(providerId, out var provider))
+            {
+                throw new SignInFailedException(SignInFailReason.NotSupportProvider, providerId);
+            }
+
+            var credential = await provider.SignIn();
+
+            Debug.Log($"link get credential: {credential.IsValid()} {credential.Provider}");
+
+            AuthResult result = null;
+            try
+            {
+                result = await _auth.CurrentUser.LinkWithCredentialAsync(credential);
+                Debug.Log($"link success: {result.User.ProviderData.Count()}");
+            }
+            catch (Exception e)
+            {
+                throw new LinkFailedException(providerId, e);
+            }
+
+            foreach (var userInfo in result.User.ProviderData)
+            {
+                Debug.Log($"linked: {userInfo.ProviderId}");
+            }
+
+            var linkedProviderId = result.AdditionalUserInfo.ProviderId;
+            return linkedProviderId;
         }
 
         public bool IsSupportCredential(string providerId)

@@ -20,7 +20,7 @@ namespace FirebaseToolkit.Auth
         public EditorAuthController(AuthConfig config)
         {
             _config = config;
-            _providers = _config.Providers.Keys.ToHashSet();
+            _providers = new HashSet<string>(_config.Providers.Keys);
         }
 
         public UniTask<UserInfo> LoginAsync() => UniTask.FromResult(new UserInfo());
@@ -41,6 +41,12 @@ namespace FirebaseToolkit.Auth
 
             _signedProviders.Add(providerId);
             return UniTask.FromResult(user);
+        }
+
+        public UniTask<string> LinkAsync(string providerId)
+        {
+            _signedProviders.Add(providerId);
+            return UniTask.FromResult(providerId);
         }
 
         public UniTask<bool> SignOutAsync(string providerId)

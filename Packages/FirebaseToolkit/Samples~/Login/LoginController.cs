@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Firebase.Auth;
 using FirebaseToolkit;
 using FirebaseToolkit.Auth;
 using FirebaseToolkit.Auth.Apple;
@@ -13,11 +12,8 @@ using UnityEngine.UI;
 public class LoginController : MonoBehaviour
 {
     [SerializeField] private Button loginButton;
-    [SerializeField] private Button logoutButton;
-    [SerializeField] private Button deleteButton;
 
     [SerializeField] private GameObject signInButtons;
-    [SerializeField] private Button signInAnonymousButton;
     [SerializeField] private Button signInGoogleButton;
     [SerializeField] private Button signInAppleButton;
 
@@ -63,29 +59,12 @@ public class LoginController : MonoBehaviour
         {
             Debug.Log("init failed");
         }
-
-        FirebaseAuth.DefaultInstance.StateChanged += (sender, args) =>
-        {
-            var auth = FirebaseAuth.DefaultInstance;
-            if (auth is {CurrentUser: { }})
-            {
-                Debug.Log($"state changed: {auth.CurrentUser.UserId} {auth.CurrentUser.IsAnonymous}");
-            }
-            else
-            {
-                Debug.Log($"state changed: user is null");
-            }
-        };
     }
 
     private void OnInitialized()
     {
         loginButton.gameObject.SetActive(true);
         loginButton.onClick.AddListener(OnClickLogin);
-        logoutButton.onClick.AddListener(OnClickLogout);
-        deleteButton.onClick.AddListener(OnClickDelete);
-
-        signInAnonymousButton.onClick.AddListener(OnClickSignInAnonymous);
 
         signInGoogleButton.onClick.AddListener(OnClickSignInGoogle);
         signOutGoogleButton.onClick.AddListener(OnClickSignOutGoogle);
@@ -94,60 +73,6 @@ public class LoginController : MonoBehaviour
         signInAppleButton.onClick.AddListener(OnClickSignInApple);
         signOutAppleButton.onClick.AddListener(OnClickSignOutApple);
         linkAppleButton.onClick.AddListener(OnClickLinkApple);
-    }
-
-    private void OnClickSignInAnonymous()
-    {
-        try
-        {
-            FirebaseManager.SignInAnonymousAsync().ContinueWith(_ =>
-            {
-                Debug.Log($"anonymous success: {_.IsAnonymous} {_.Id}");
-                UpdateSignInOutButtons();
-            });
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-        }
-    }
-
-    private void OnClickDelete()
-    {
-        var auth = FirebaseAuth.DefaultInstance;
-        var user = auth.CurrentUser;
-
-        if (user != null)
-        {
-            try
-            {
-                user.DeleteAsync().ContinueWith(_ =>
-                {
-                    auth.SignOut();
-                    Debug.Log("delete success");
-                    if (FirebaseAuth.DefaultInstance.CurrentUser == null)
-                    {
-                        Debug.Log("user is null");
-                    }
-                    else
-                    {
-                        Debug.Log($"user is not null");
-                    }
-
-                    UpdateSignInOutButtons();
-                });
-            }
-            catch (Exception)
-            {
-                Debug.Log("delete failed");
-            }
-        }
-    }
-
-    private void OnClickLogout()
-    {
-        FirebaseAuth.DefaultInstance.SignOut();
-        UpdateSignInOutButtons();
     }
 
 
@@ -160,7 +85,7 @@ public class LoginController : MonoBehaviour
     {
         FirebaseManager.SignInAsync(GoogleCredentialProvider.Id).ContinueWith(_ =>
         {
-            Debug.Log($"sign in with google success: {_.Id}");
+            Debug.Log("sign in with google success");
             UpdateSignInOutButtons();
         });
     }
@@ -169,7 +94,7 @@ public class LoginController : MonoBehaviour
     {
         FirebaseManager.SignInAsync(AppleCredentialProvider.Id).ContinueWith(_ =>
         {
-            Debug.Log($"sign in with apple success: {_.Id}");
+            Debug.Log("sign in with apple success");
             UpdateSignInOutButtons();
         });
     }
@@ -194,7 +119,7 @@ public class LoginController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"login success: {user.IsAnonymous}");
+            Debug.Log("login success");
         }
 
         loginButton.gameObject.SetActive(false);
@@ -211,37 +136,19 @@ public class LoginController : MonoBehaviour
             Debug.Log($"connected: {provider}");
         }
 
-        var user = FirebaseManager.GetUser();
-        signInAnonymousButton.gameObject.SetActive(!user.IsValid());
+        var googleSignIn = FirebaseManager.IsSupportCredential(GoogleCredentialProvider.Id)
+                           && !connectedProviders.Contains(GoogleCredentialProvider.Id);
+        signInGoogleButton.gameObject.SetActive(googleSignIn);
+        signOutGoogleButton.gameObject.SetActive(!googleSignIn);
 
 
-        signInGoogleButton.gameObject.SetActive(
-            !user.IsValid()
-            && !connectedProviders.Contains(GoogleCredentialProvider.Id)
-        );
-        signOutGoogleButton.gameObject.SetActive(
-            user.IsValid()
-            && connectedProviders.Contains(GoogleCredentialProvider.Id)
-        );
+        var appleSignIn = FirebaseManager.IsSupportCredential(AppleCredentialProvider.Id)
+                          && !connectedProviders.Contains(AppleCredentialProvider.Id);
+        signInAppleButton.gameObject.SetActive(appleSignIn);
+        signOutAppleButton.gameObject.SetActive(!appleSignIn);
 
-
-        signInAppleButton.gameObject.SetActive(
-            !user.IsValid()
-            && !connectedProviders.Contains(AppleCredentialProvider.Id)
-        );
-        signOutAppleButton.gameObject.SetActive(
-            user.IsValid()
-            && connectedProviders.Contains(AppleCredentialProvider.Id)
-        );
-
-        linkGoogleButton.gameObject.SetActive(
-            user.IsValid()
-            && !connectedProviders.Contains(GoogleCredentialProvider.Id)
-        );
-        linkAppleButton.gameObject.SetActive(
-            user.IsValid()
-            && !connectedProviders.Contains(AppleCredentialProvider.Id)
-        );
+        linkGoogleButton.gameObject.SetActive(googleSignIn);
+        linkAppleButton.gameObject.SetActive(appleSignIn);
     }
 
     private void OnClickSignOutGoogle()
@@ -293,7 +200,8 @@ public class LoginController : MonoBehaviour
         }
         catch (LinkFailedException e)
         {
-            Debug.LogError($"link failed: {e}");
+            Debug.LogException(e);
+            Debug.LogException(e.InnerException);
         }
     }
 }
